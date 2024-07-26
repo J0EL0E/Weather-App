@@ -3,12 +3,15 @@ import axios from 'axios';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import * as path from 'path'
+import { config } from 'dotenv';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
+
 const port = 3000;
+config();
 
 app.use(express.static('public'));
 app.use(express.urlencoded({extended: true}));
@@ -16,7 +19,7 @@ app.use(express.urlencoded({extended: true}));
 
 //home directory
 app.get('/', (req, res) => {
-    res.sendFile( path.join(__dirname, '/views/index.html') );
+    res.sendFile( path.join(__dirname, '/index.html') );
 });
 
 //getting the coordinates of the place searched by the user 
@@ -25,7 +28,7 @@ app.post('/search',  async (req, res) => {
     const searchKey = req.body["search-value"];
     const response = await axios('https://api.geocodify.com/v2/geocode', {
         params: {
-        api_key: '6EqrxY82vtin6WIiQdL7flQR05MDB1cT',
+        api_key: process.env.API_KEY,
         q: searchKey
         }
     });
@@ -55,7 +58,7 @@ app.post('/search',  async (req, res) => {
         res.render('weather.ejs', weatherData);
     }
     catch (error) {
-        res.send("Place not found")
+        res.send("Place not found");
     }
     }
     catch (error) {
